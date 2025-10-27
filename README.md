@@ -258,13 +258,13 @@ GMAIL_USER=yourgmail@gmail.com
 # Twilio API (from Twilio)
 TWILIO_ACCOUNT_SID=ACf3399a386d3fb244e5912218ce2280d7
 TWILIO_AUTH_TOKEN=d830f907472b5267bb2456fe73007404
-TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
-TWILIO_PHONE_NUMBER=+15055551234
+TWILIO_WHATSAPP_FROM=yourphonenumber
+TWILIO_PHONE_NUMBER=yourphonenumber
 
 # Admin Settings
 ADMIN_PASSWORD=berber123
-ADMIN_EMAIL=soydankadir19@gmail.com
-ADMIN_PHONE=+905466592920
+ADMIN_EMAILyourgmail@gmail.com
+ADMIN_PHONE=yournumber
 5. 💻 RUNNING THE PROJECT
 Starting Backend with PowerShell:
 powershell
