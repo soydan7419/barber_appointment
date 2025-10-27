@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Berber Randevu Sistemi</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        small { color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🧔 Berber Randevu Sistemi</h1>
+    
+    <form id="randevuForm">
+        <div class="form-group">
+            <label>Adınız Soyadınız:</label>
+            <input type="text" name="name" placeholder="Ahmet Yılmaz" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Telefon Numaranız:</label>
+            <input type="tel" name="phone" placeholder="+905551234567" required>
+            <small>Uluslararası format: +90...</small>
+        </div>
+        
+        <div class="form-group">
+            <label>Email Adresiniz:</label>
+            <input type="email" name="email" placeholder="ahmet@example.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Randevu Tarihi ve Saati:</label>
+            <input type="datetime-local" name="date" required>
+        </div>
+        
+        <button type="submit">Randevu Oluştur</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('randevuForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Oluşturuluyor...';
+            submitBtn.disabled = true;
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                date: formData.get('date')
+            };
+
+            try {
+                // BACKEND_URL'i environment variable olarak ayarlayın
+                const backendUrl = process.env.BACKEND_URL || 'http://localhost:4000';
+                
+                const response = await fetch(`${backendUrl}/randevu`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                const resultDiv = document.getElementById('result');
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Randevu Başarıyla Oluşturuldu!</h3>
+                        <p><strong>Ad:</strong> ${result.appointment.name}</p>
+                        <p><strong>Telefon:</strong> ${result.appointment.phone}</p>
+                        <p><strong>Email:</strong> ${result.appointment.email}</p>
+                        <p><strong>Tarih:</strong> ${new Date(result.appointment.date).toLocaleString('tr-TR')}</p>
+                        <p><strong>Bildirim:</strong> ${result.reminderNote}</p>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>❌ Hata!</h3>
+                        <p>${result.error || 'Bilinmeyen bir hata oluştu'}</p>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Bağlantı Hatası</h3>
+                        <p>Sunucuya bağlanılamadı. Lütfen backend servisinin çalıştığından emin olun.</p>
+                        <p><small>Hata detayı: ${error.message}</small></p>
+                    </div>
+                `;
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Tarihi 1 saat sonrası olarak ayarla
+        const now = new Date();
+        now.setHours(now.getHours() + 1);
+        now.setMinutes(0);
+        now.setSeconds(0);
+        document.querySelector('input[name="date"]').value = now.toISOString().slice(0, 16);
+    </script>
+</body>
+</html>

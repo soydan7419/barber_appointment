@@ -1,0 +1,2160 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteBarber | Premium Erkek Bakımı</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EliteBarber">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #000000;
+            --gold: #FFD700;
+            --silver: #C0C0C0;
+            --accent: #8B4513;
+            --light: #FFFFFF;
+            --dark: #1A1A1A;
+            --gradient: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #8B4513 100%);
+            --glass: rgba(255, 255, 255, 0.1);
+            --shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary);
+            color: var(--light);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* PWA Install Prompt */
+        .pwa-install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient);
+            color: var(--primary);
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            z-index: 10000;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .pwa-install-prompt.show {
+            display: flex;
+        }
+
+        .pwa-install-prompt button {
+            background: var(--primary);
+            color: var(--gold);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pwa-install-prompt button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 2rem;
+            right: 4rem;
+            z-index: 1001;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 0.5rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .lang-btn.active {
+            background: var(--gradient);
+            color: var(--primary);
+        }
+
+        /* Offline Indicator */
+        .offline-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ef4444;
+            color: white;
+            text-align: center;
+            padding: 0.5rem;
+            z-index: 10000;
+            display: none;
+        }
+
+        .offline-indicator.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        /* Push Notification Bell */
+        .notification-bell {
+            position: fixed;
+            top: 2rem;
+            right: 8rem;
+            z-index: 1001;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .notification-bell:hover {
+            transform: scale(1.1);
+            border-color: var(--gold);
+        }
+
+        .notification-bell i {
+            color: var(--gold);
+            font-size: 1.2rem;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-follower {
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 6rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--gradient);
+            color: var(--primary);
+            padding: 1.5rem 3rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        /* Services Grid */
+        .services {
+            padding: 8rem 4rem;
+            background: var(--dark);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 4rem;
+            margin-bottom: 6rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .service-card:hover::before {
+            left: 100%;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gold);
+            box-shadow: var(--shadow);
+        }
+
+        .service-icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .service-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .service-card p {
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        /* Portfolio */
+        .portfolio {
+            padding: 8rem 4rem;
+            background: var(--primary);
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .portfolio-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: var(--dark);
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* KOMPAKT DEĞERLENDİRME SİSTEMİ STİLLERİ */
+        .reviews {
+            padding: 4rem 2rem;
+            background: var(--dark);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .compact-review-stats {
+            background: var(--glass);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .overall-rating-compact {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rating-score {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .star-rating {
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
+
+        .rating-text {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        /* Kompakt Form */
+        .compact-review-form {
+            background: var(--glass);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .compact-review-form h3 {
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1.3rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .review-form-compact .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .review-form-compact input[type="text"] {
+            flex: 1;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+
+        .review-form-compact textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 0.9rem;
+            resize: vertical;
+            min-height: 60px;
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Kompakt Yıldız Input */
+        .star-rating-input-compact {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 3px;
+        }
+
+        .star-rating-input-compact input {
+            display: none;
+        }
+
+        .star-rating-input-compact label {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: color 0.2s;
+            margin-bottom: 0;
+        }
+
+        .star-rating-input-compact input:checked ~ label,
+        .star-rating-input-compact label:hover,
+        .star-rating-input-compact label:hover ~ label {
+            color: var(--gold);
+        }
+
+        .star-rating-input-compact input:checked + label {
+            color: var(--gold);
+        }
+
+        .submit-btn-compact {
+            width: 100%;
+            background: var(--gradient);
+            color: var(--primary);
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn-compact:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Kompakt Değerlendirme Listesi */
+        .compact-reviews-list {
+            background: var(--glass);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .reviews-grid-compact {
+            display: grid;
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .review-card-compact {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.2rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .review-card-compact:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .review-header-compact {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+
+        .reviewer-info-compact {
+            flex: 1;
+        }
+
+        .reviewer-name-compact {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .review-date-compact {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .review-rating-compact {
+            color: var(--gold);
+            font-size: 1rem;
+        }
+
+        .review-comment-compact {
+            line-height: 1.4;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* KOMPAKT TAKVİM STİLLERİ */
+        .compact-calendar {
+            padding: 2rem;
+            background: var(--glass);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-nav-btn {
+            background: var(--gradient);
+            color: var(--primary);
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .calendar-nav-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .compact-week-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .compact-week-days div {
+            padding: 0.6rem 0.3rem;
+        }
+
+        .compact-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            margin-bottom: 1.5rem;
+        }
+
+        .compact-day {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .compact-day:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--gold);
+        }
+
+        .compact-day.active {
+            background: var(--gradient);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .compact-day.disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .compact-day.has-appointments::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            width: 3px;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 50%;
+        }
+
+        .compact-time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .compact-time-slot {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.6rem 0.3rem;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            font-size: 0.8rem;
+        }
+
+        .compact-time-slot:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: var(--gold);
+        }
+
+        .compact-time-slot.selected {
+            background: var(--gradient);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .compact-time-slot.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .selected-date-info {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .selected-date-info h4 {
+            color: var(--gold);
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        /* Appointment Section */
+        .appointment {
+            padding: 6rem 4rem;
+            background: var(--dark);
+            position: relative;
+        }
+
+        .appointment::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+        }
+
+        .appointment-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            position: relative;
+            z-index: 2;
+            box-shadow: var(--shadow);
+        }
+
+        .appointment-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--light);
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group input[readonly] {
+            background: rgba(255, 255, 255, 0.08);
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--gradient);
+            color: var(--primary);
+            padding: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1.2rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: #22c55e;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--light);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links a {
+            color: var(--light);
+            font-size: 1.3rem;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--gold);
+        }
+
+        .copyright {
+            opacity: 0.7;
+            font-size: 0.8rem;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .language-selector {
+                right: 2rem;
+                top: 1.5rem;
+            }
+
+            .notification-bell {
+                right: 6rem;
+                top: 1.5rem;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .services, .portfolio, .reviews, .appointment {
+                padding: 3rem 1.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+                margin-bottom: 3rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .service-card {
+                padding: 2rem;
+            }
+
+            .review-form-compact .form-row {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .star-rating-input-compact {
+                justify-content: center;
+            }
+            
+            .compact-review-form,
+            .compact-review-stats,
+            .compact-reviews-list {
+                padding: 1rem;
+            }
+            
+            .reviews-grid-compact {
+                max-height: 300px;
+            }
+
+            .appointment-container {
+                padding: 2rem;
+                margin: 0 1rem;
+            }
+
+            .appointment-title {
+                font-size: 2rem;
+            }
+
+            .compact-calendar {
+                padding: 1.5rem;
+            }
+
+            .calendar-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .compact-time-slots {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            }
+
+            .compact-day {
+                font-size: 0.7rem;
+            }
+
+            .pwa-install-prompt {
+                width: 90%;
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Offline Indicator -->
+    <div class="offline-indicator" id="offlineIndicator">
+        ⚠️ Çevrimdışı Mod - İnternet bağlantınız kontrol ediliyor
+    </div>
+
+    <!-- PWA Install Prompt -->
+    <div class="pwa-install-prompt" id="installPrompt">
+        <span>📱 EliteBarber'i uygulama olarak yüklemek ister misiniz?</span>
+        <button id="installBtn">Yükle</button>
+        <button id="cancelInstall" style="background: transparent; color: var(--light);">Şimdi Değil</button>
+    </div>
+
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn active" data-lang="tr">TR</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="de">DE</button>
+    </div>
+
+    <!-- Notification Bell -->
+    <div class="notification-bell" id="notificationBell">
+        <i class="fas fa-bell"></i>
+        <div class="notification-badge" id="notificationBadge">3</div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="#" class="logo">ELITEBARBER</a>
+        <ul class="nav-links">
+            <li><a href="#services" data-i18n="nav.services">Hizmetler</a></li>
+            <li><a href="#portfolio" data-i18n="nav.portfolio">Portfolyo</a></li>
+            <li><a href="#reviews" data-i18n="nav.reviews">Değerlendirmeler</a></li>
+            <li><a href="#appointment" data-i18n="nav.appointment">Randevu</a></li>
+            <li><a href="#contact" data-i18n="nav.contact">İletişim</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <video autoplay muted loop class="hero-video">
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-barber-cutting-a-man-hair-43755-large.mp4" type="video/mp4">
+        </video>
+        <div class="hero-content">
+            <h1 class="hero-title floating">ELITE BARBER</h1>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">Premium erkek bakımında yeni standart</p>
+            <a href="#appointment" class="cta-button">
+                <i class="fas fa-calendar-alt"></i>
+                <span data-i18n="hero.cta">Hemen Randevu Al</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <h2 class="section-title" data-i18n="services.title">Premium Hizmetler</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <h3 data-i18n="services.haircut">Elit Saç Kesimi</h3>
+                <p data-i18n="services.haircut_desc">Kişiye özel stil analizi ve premium saç kesimi deneyimi</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h3 data-i18n="services.beard">Sakal Tasarım</h3>
+                <p data-i18n="services.beard_desc">Profesyonel sakal şekillendirme ve bakım tedavisi</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <h3 data-i18n="services.facial">Yüz Bakımı</h3>
+                <p data-i18n="services.facial_desc">Lüks ürünlerle derinlemesine yüz bakımı ve temizlik</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section class="portfolio" id="portfolio">
+        <h2 class="section-title" data-i18n="portfolio.title">Çalışmalarımız</h2>
+        <div class="portfolio-grid">
+            <div class="portfolio-item">
+                <img src="https://images.unsplash.com/photo-1567894340315-735d7c361db0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Saç Kesimi">
+            </div>
+            <div class="portfolio-item">
+                <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Sakal Tasarım">
+            </div>
+            <div class="portfolio-item">
+                <img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Yüz Bakımı">
+            </div>
+            <div class="portfolio-item">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Stil Danışmanlığı">
+            </div>
+        </div>
+    </section>
+
+    <!-- KOMPAKT DEĞERLENDİRME SİSTEMİ -->
+    <section class="reviews" id="reviews">
+        <div class="container">
+            <h2 class="section-title" data-i18n="reviews.title">⭐ Müşteri Yorumları</h2>
+            
+            <!-- Kompakt İstatistikler -->
+            <div class="compact-review-stats">
+                <div class="stats-overview">
+                    <div class="overall-rating-compact">
+                        <div class="rating-score">4.9</div>
+                        <div class="star-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <div class="rating-text" data-i18n="reviews.count">47 Değerlendirme</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kompakt Değerlendirme Formu -->
+            <div class="compact-review-form">
+                <h3 data-i18n="reviews.share">Deneyiminizi Paylaşın</h3>
+                <form id="reviewForm" class="review-form-compact">
+                    <div class="form-row">
+                        <input type="text" id="reviewName" data-i18n-placeholder="reviews.name_placeholder" placeholder="Adınız" required>
+                        <div class="star-rating-input-compact">
+                            <input type="radio" id="star5" name="rating" value="5">
+                            <label for="star5">★</label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4">★</label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3">★</label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2">★</label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1">★</label>
+                        </div>
+                    </div>
+                    <textarea id="reviewComment" data-i18n-placeholder="reviews.comment_placeholder" placeholder="Kısa bir yorum yazın..." rows="2" required></textarea>
+                    <button type="submit" class="submit-btn-compact">
+                        <i class="fas fa-paper-plane"></i>
+                        <span data-i18n="reviews.submit">Gönder</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Kompakt Değerlendirme Listesi -->
+            <div class="compact-reviews-list">
+                <div class="reviews-grid-compact" id="reviewsList">
+                    <!-- JavaScript ile doldurulacak -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Appointment Section - İÇİNE TAKVİM EKLENDİ -->
+    <section class="appointment" id="appointment">
+        <div class="appointment-container">
+            <h2 class="appointment-title" data-i18n="appointment.title">🎯 Randevu Al</h2>
+            
+            <!-- KOMPAKT TAKVİM -->
+            <div class="compact-calendar">
+                <div class="calendar-header">
+                    <button onclick="changeMonth(-1)" class="calendar-nav-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3 id="currentMonth">Ocak 2024</h3>
+                    <button onclick="changeMonth(1)" class="calendar-nav-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="compact-week-days">
+                    <div data-i18n="calendar.sun">Pz</div>
+                    <div data-i18n="calendar.mon">Pt</div>
+                    <div data-i18n="calendar.tue">Sa</div>
+                    <div data-i18n="calendar.wed">Ça</div>
+                    <div data-i18n="calendar.thu">Pe</div>
+                    <div data-i18n="calendar.fri">Cu</div>
+                    <div data-i18n="calendar.sat">Ct</div>
+                </div>
+
+                <div class="compact-calendar-grid" id="calendarGrid">
+                    <!-- JavaScript ile doldurulacak -->
+                </div>
+
+                <!-- Seçili Tarih Bilgisi -->
+                <div class="selected-date-info" id="selectedDateInfo" style="display: none;">
+                    <h4 data-i18n="calendar.selected_date">🗓️ Seçili Tarih</h4>
+                    <p id="selectedDateText">Henüz tarih seçilmedi</p>
+                </div>
+
+                <!-- Müsait Saatler -->
+                <div class="compact-time-slots" id="timeSlots" style="display: none;">
+                    <!-- JavaScript ile doldurulacak -->
+                </div>
+            </div>
+
+            <!-- RANDEVU FORMU -->
+            <form id="randevuForm">
+                <div class="form-group">
+                    <label for="name" data-i18n="form.name">Adınız Soyadınız</label>
+                    <input type="text" id="name" name="name" data-i18n-placeholder="form.name_placeholder" placeholder="Ahmet Yılmaz" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone" data-i18n="form.phone">Telefon Numaranız</label>
+                    <input type="tel" id="phone" name="phone" data-i18n-placeholder="form.phone_placeholder" placeholder="+905551234567" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" data-i18n="form.email">Email Adresiniz</label>
+                    <input type="email" id="email" name="email" data-i18n-placeholder="form.email_placeholder" placeholder="ahmet@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dateDisplay" data-i18n="form.selected_appointment">Seçilen Randevu</label>
+                    <input type="text" id="dateDisplay" readonly data-i18n-placeholder="form.appointment_placeholder" placeholder="Önce tarih ve saat seçin" style="background: rgba(255,255,255,0.08); cursor: not-allowed;">
+                    <input type="hidden" id="date" name="date" required>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                    <span data-i18n="form.submit">Randevu Oluştur</span>
+                </button>
+            </form>
+
+            <div id="result"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-logo">ELITEBARBER</div>
+            <div class="footer-links">
+                <a href="#services" data-i18n="nav.services">Hizmetler</a>
+                <a href="#portfolio" data-i18n="nav.portfolio">Portfolyo</a>
+                <a href="#reviews" data-i18n="nav.reviews">Değerlendirmeler</a>
+                <a href="#appointment" data-i18n="nav.appointment">Randevu</a>
+                <a href="#contact" data-i18n="nav.contact">İletişim</a>
+            </div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+            <div class="contact-info">
+                <p>📞 +90 555 555 5555</p>
+                <p>📧 info@elitebarber.com</p>
+                <p>📍 Örnek Mah. Örnek Cad., İstanbul</p>
+            </div>
+            <p class="copyright">&copy; 2024 EliteBarber.Alperen Soydan <span data-i18n="footer.rights">Tüm hakları saklıdır.</span></p>
+        </div>
+    </footer>
+
+    <script>
+        // 📱 PWA SERVİS WORKER KAYDI
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker kaydı başarılı: ', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('ServiceWorker kaydı başarısız: ', error);
+                    });
+            });
+        }
+
+        // 🌐 ÇOK DİLLİ DESTEK SİSTEMİ
+        const translations = {
+            tr: {
+                // Navigasyon
+                "nav.services": "Hizmetler",
+                "nav.portfolio": "Portfolyo",
+                "nav.reviews": "Değerlendirmeler",
+                "nav.appointment": "Randevu",
+                "nav.contact": "İletişim",
+                
+                // Hero
+                "hero.subtitle": "Premium erkek bakımında yeni standart",
+                "hero.cta": "Hemen Randevu Al",
+                
+                // Hizmetler
+                "services.title": "Premium Hizmetler",
+                "services.haircut": "Elit Saç Kesimi",
+                "services.haircut_desc": "Kişiye özel stil analizi ve premium saç kesimi deneyimi",
+                "services.beard": "Sakal Tasarım",
+                "services.beard_desc": "Profesyonel sakal şekillendirme ve bakım tedavisi",
+                "services.facial": "Yüz Bakımı",
+                "services.facial_desc": "Lüks ürünlerle derinlemesine yüz bakımı ve temizlik",
+                
+                // Portfolyo
+                "portfolio.title": "Çalışmalarımız",
+                
+                // Değerlendirmeler
+                "reviews.title": "⭐ Müşteri Yorumları",
+                "reviews.count": "47 Değerlendirme",
+                "reviews.share": "Deneyiminizi Paylaşın",
+                "reviews.name_placeholder": "Adınız",
+                "reviews.comment_placeholder": "Kısa bir yorum yazın...",
+                "reviews.submit": "Gönder",
+                
+                // Randevu
+                "appointment.title": "🎯 Randevu Al",
+                
+                // Takvim
+                "calendar.sun": "Pz",
+                "calendar.mon": "Pt",
+                "calendar.tue": "Sa",
+                "calendar.wed": "Ça",
+                "calendar.thu": "Pe",
+                "calendar.fri": "Cu",
+                "calendar.sat": "Ct",
+                "calendar.selected_date": "🗓️ Seçili Tarih",
+                
+                // Form
+                "form.name": "Adınız Soyadınız",
+                "form.name_placeholder": "Ahmet Yılmaz",
+                "form.phone": "Telefon Numaranız",
+                "form.phone_placeholder": "+905551234567",
+                "form.email": "Email Adresiniz",
+                "form.email_placeholder": "ahmet@example.com",
+                "form.selected_appointment": "Seçilen Randevu",
+                "form.appointment_placeholder": "Önce tarih ve saat seçin",
+                "form.submit": "Randevu Oluştur",
+                
+                // Footer
+                "footer.rights": "Tüm hakları saklıdır."
+            },
+            en: {
+                "nav.services": "Services",
+                "nav.portfolio": "Portfolio",
+                "nav.reviews": "Reviews",
+                "nav.appointment": "Appointment",
+                "nav.contact": "Contact",
+                
+                "hero.subtitle": "New standards in premium men's grooming",
+                "hero.cta": "Book Appointment Now",
+                
+                "services.title": "Premium Services",
+                "services.haircut": "Elite Haircut",
+                "services.haircut_desc": "Personalized style analysis and premium haircut experience",
+                "services.beard": "Beard Design",
+                "services.beard_desc": "Professional beard shaping and care treatment",
+                "services.facial": "Facial Care",
+                "services.facial_desc": "Deep facial care and cleansing with luxury products",
+                
+                "portfolio.title": "Our Works",
+                
+                "reviews.title": "⭐ Customer Reviews",
+                "reviews.count": "47 Reviews",
+                "reviews.share": "Share Your Experience",
+                "reviews.name_placeholder": "Your Name",
+                "reviews.comment_placeholder": "Write a short comment...",
+                "reviews.submit": "Submit",
+                
+                "appointment.title": "🎯 Book Appointment",
+                
+                "calendar.sun": "Sun",
+                "calendar.mon": "Mon",
+                "calendar.tue": "Tue",
+                "calendar.wed": "Wed",
+                "calendar.thu": "Thu",
+                "calendar.fri": "Fri",
+                "calendar.sat": "Sat",
+                "calendar.selected_date": "🗓️ Selected Date",
+                
+                "form.name": "Your Full Name",
+                "form.name_placeholder": "John Doe",
+                "form.phone": "Your Phone Number",
+                "form.phone_placeholder": "+1234567890",
+                "form.email": "Your Email Address",
+                "form.email_placeholder": "john@example.com",
+                "form.selected_appointment": "Selected Appointment",
+                "form.appointment_placeholder": "Select date and time first",
+                "form.submit": "Create Appointment",
+                
+                "footer.rights": "All rights reserved."
+            },
+            de: {
+                "nav.services": "Dienstleistungen",
+                "nav.portfolio": "Portfolio",
+                "nav.reviews": "Bewertungen",
+                "nav.appointment": "Termin",
+                "nav.contact": "Kontakt",
+                
+                "hero.subtitle": "Neue Standards in Premium-Herrenpflege",
+                "hero.cta": "Jetzt Termin Buchen",
+                
+                "services.title": "Premium Dienstleistungen",
+                "services.haircut": "Elite Haarschnitt",
+                "services.haircut_desc": "Persönliche Stilanalyse und Premium-Haarschnitt-Erlebnis",
+                "services.beard": "Bartdesign",
+                "services.beard_desc": "Professionelle Bartgestaltung und Pflegebehandlung",
+                "services.facial": "Gesichtspflege",
+                "services.facial_desc": "Tiefenreinigung und Gesichtspflege mit Luxusprodukten",
+                
+                "portfolio.title": "Unsere Arbeiten",
+                
+                "reviews.title": "⭐ Kundenbewertungen",
+                "reviews.count": "47 Bewertungen",
+                "reviews.share": "Teilen Sie Ihre Erfahrung",
+                "reviews.name_placeholder": "Ihr Name",
+                "reviews.comment_placeholder": "Schreiben Sie einen kurzen Kommentar...",
+                "reviews.submit": "Senden",
+                
+                "appointment.title": "🎯 Termin Buchen",
+                
+                "calendar.sun": "So",
+                "calendar.mon": "Mo",
+                "calendar.tue": "Di",
+                "calendar.wed": "Mi",
+                "calendar.thu": "Do",
+                "calendar.fri": "Fr",
+                "calendar.sat": "Sa",
+                "calendar.selected_date": "🗓️ Ausgewähltes Datum",
+                
+                "form.name": "Ihr Vollständiger Name",
+                "form.name_placeholder": "Max Mustermann",
+                "form.phone": "Ihre Telefonnummer",
+                "form.phone_placeholder": "+49123456789",
+                "form.email": "Ihre E-Mail-Adresse",
+                "form.email_placeholder": "max@example.com",
+                "form.selected_appointment": "Ausgewählter Termin",
+                "form.appointment_placeholder": "Wählen Sie zuerst Datum und Uhrzeit",
+                "form.submit": "Termin Erstellen",
+                
+                "footer.rights": "Alle Rechte vorbehalten."
+            }
+        };
+
+        // Dil değiştirme fonksiyonu
+        function changeLanguage(lang) {
+            // Aktif butonu güncelle
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Tüm çeviri elementlerini güncelle
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Placeholder'ları güncelle
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[lang] && translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+            
+            // LocalStorage'a kaydet
+            localStorage.setItem('preferredLanguage', lang);
+            
+            // Sayfa başlığını güncelle
+            document.title = lang === 'tr' ? 'EliteBarber | Premium Erkek Bakımı' :
+                            lang === 'en' ? 'EliteBarber | Premium Men\'s Grooming' :
+                            'EliteBarber | Premium Herrenpflege';
+        }
+
+        // Otomatik dil algılama
+        function detectLanguage() {
+            const savedLang = localStorage.getItem('preferredLanguage');
+            const browserLang = navigator.language.split('-')[0];
+            
+            if (savedLang && ['tr', 'en', 'de'].includes(savedLang)) {
+                return savedLang;
+            } else if (['tr', 'en', 'de'].includes(browserLang)) {
+                return browserLang;
+            } else {
+                return 'tr'; // Varsayılan dil
+            }
+        }
+
+        // 📱 PWA KURULUM PROMPT
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+        const cancelInstall = document.getElementById('cancelInstall');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installPrompt.classList.add('show');
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installPrompt.classList.remove('show');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        cancelInstall.addEventListener('click', () => {
+            installPrompt.classList.remove('show');
+        });
+
+        // 📱 OFFLINE DURUM TAKİBİ
+        const offlineIndicator = document.getElementById('offlineIndicator');
+
+        window.addEventListener('online', () => {
+            offlineIndicator.classList.remove('show');
+            showNotification('✅ İnternet bağlantısı yeniden sağlandı', 'success');
+        });
+
+        window.addEventListener('offline', () => {
+            offlineIndicator.classList.add('show');
+            showNotification('⚠️ Çevrimdışı mod - Bazı özellikler kısıtlı', 'warning');
+        });
+
+        // 📱 PUSH BİLDİRİMLERİ
+        function showNotification(message, type = 'info') {
+            // Basit bildirim sistemi
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('EliteBarber', {
+                    body: message,
+                    icon: '/icons/icon-192x192.png'
+                });
+            } else {
+                // Fallback: Ekranda göster
+                const notification = document.createElement('div');
+                notification.className = `result ${type}`;
+                notification.textContent = message;
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.zIndex = '10000';
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // Bildirim izni iste
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        showNotification('🔔 Bildirimler etkinleştirildi!', 'success');
+                    }
+                });
+            }
+        }
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                cursorFollower.style.left = e.clientX + 'px';
+                cursorFollower.style.top = e.clientY + 'px';
+            }, 100);
+        });
+
+        // Canlı Takvim Fonksiyonları
+        let currentDate = new Date();
+        let selectedDate = null;
+        let selectedTime = null;
+
+        // Takvimi oluştur
+        function generateCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const currentMonthElement = document.getElementById('currentMonth');
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // Ay başlığını güncelle
+            const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 
+                               'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+            currentMonthElement.textContent = `${monthNames[month]} ${year}`;
+            
+            // Ayın ilk günü ve son günü
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDay = firstDay.getDay(); // 0 = Pazar
+            
+            // Takvim gridini temizle
+            calendarGrid.innerHTML = '';
+            
+            // Önceki aydan günler
+            const prevMonthLastDay = new Date(year, month, 0).getDate();
+            for (let i = startDay - 1; i >= 0; i--) {
+                const dayElement = createDayElement(prevMonthLastDay - i, true);
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Mevcut aydan günler
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayDate = new Date(year, month, day);
+                const dayElement = createDayElement(day, false, dayDate);
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Sonraki aydan günler (takvimi tamamlamak için)
+            const totalCells = 42;
+            const remainingCells = totalCells - (startDay + lastDay.getDate());
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayElement = createDayElement(day, true);
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        // Gün elementi oluştur
+        function createDayElement(day, isDisabled, date = null) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'compact-day';
+            
+            if (isDisabled) {
+                dayElement.classList.add('disabled');
+                dayElement.innerHTML = `<div>${day}</div>`;
+                return dayElement;
+            }
+            
+            // Bugün kontrolü
+            const today = new Date();
+            if (date && date.toDateString() === today.toDateString()) {
+                dayElement.classList.add('active');
+            }
+            
+            // Seçili gün kontrolü
+            if (selectedDate && date && date.toDateString() === selectedDate.toDateString()) {
+                dayElement.classList.add('active');
+            }
+            
+            dayElement.innerHTML = `<div>${day}</div>`;
+            
+            // Tıklanabilir günler için event listener
+            dayElement.addEventListener('click', () => {
+                if (!isDisabled) {
+                    selectDate(date);
+                }
+            });
+            
+            return dayElement;
+        }
+
+        // Tarih seç
+        function selectDate(date) {
+            selectedDate = date;
+            selectedTime = null;
+            
+            // Tüm günlerden active classını kaldır
+            document.querySelectorAll('.compact-day').forEach(day => {
+                day.classList.remove('active');
+            });
+            
+            // Seçili güne active classı ekle
+            const dayElements = document.querySelectorAll('.compact-day');
+            const selectedDayElement = Array.from(dayElements).find(day => {
+                const dayNumber = day.textContent;
+                return dayNumber == date.getDate() && !day.classList.contains('disabled');
+            });
+            
+            if (selectedDayElement) {
+                selectedDayElement.classList.add('active');
+            }
+            
+            // Seçili tarih bilgisini göster
+            showSelectedDateInfo(date);
+            
+            // Müsait saatleri yükle
+            loadAvailableSlots(date);
+        }
+
+        // Seçili tarih bilgisini göster
+        function showSelectedDateInfo(date) {
+            const selectedDateInfo = document.getElementById('selectedDateInfo');
+            const selectedDateText = document.getElementById('selectedDateText');
+            
+            const dateText = date.toLocaleDateString('tr-TR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            selectedDateText.textContent = dateText;
+            selectedDateInfo.style.display = 'block';
+        }
+
+        // Ay değiştir
+        function changeMonth(direction) {
+            currentDate.setMonth(currentDate.getMonth() + direction);
+            generateCalendar();
+        }
+
+        // Müsait saatleri yükle
+        async function loadAvailableSlots(date) {
+            const timeSlots = document.getElementById('timeSlots');
+            
+            // Loading state
+            timeSlots.innerHTML = '<div class="compact-time-slot" style="grid-column: 1/-1; background: rgba(255,215,0,0.1);">Yükleniyor...</div>';
+            timeSlots.style.display = 'grid';
+            
+            try {
+                // API'den müsait saatleri al
+                const response = await fetch(`http://localhost:4000/api/available-slots?date=${date.toISOString()}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayTimeSlots(result.availableSlots, result.bookedSlots);
+                } else {
+                    timeSlots.innerHTML = '<div class="compact-time-slot" style="grid-column: 1/-1;">Müsait saat bulunamadı</div>';
+                }
+            } catch (error) {
+                console.error('Müsait saatler yüklenirken hata:', error);
+                // Fallback: Manuel saatler göster
+                displayTimeSlots(['10:00', '11:00', '14:00', '15:00', '16:00', '17:00'], []);
+            }
+        }
+
+        // Saat slotlarını göster
+        function displayTimeSlots(availableSlots, bookedSlots) {
+            const timeSlots = document.getElementById('timeSlots');
+            timeSlots.innerHTML = '';
+            
+            const allSlots = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+            
+            allSlots.forEach(slot => {
+                const slotElement = document.createElement('div');
+                slotElement.className = 'compact-time-slot';
+                
+                const isAvailable = availableSlots.includes(slot);
+                const isBooked = bookedSlots.includes(slot);
+                
+                if (isBooked) {
+                    slotElement.classList.add('disabled');
+                } else if (selectedTime === slot) {
+                    slotElement.classList.add('selected');
+                }
+                
+                slotElement.innerHTML = `${slot}`;
+                
+                if (!isBooked) {
+                    slotElement.addEventListener('click', () => selectTime(slot));
+                }
+                
+                timeSlots.appendChild(slotElement);
+            });
+        }
+
+        // Saat seç
+        function selectTime(time) {
+            selectedTime = time;
+            
+            // Tüm slotlardan selected classını kaldır
+            document.querySelectorAll('.compact-time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            
+            // Seçili slota selected classı ekle
+            const timeSlots = document.querySelectorAll('.compact-time-slot');
+            const selectedSlot = Array.from(timeSlots).find(slot => 
+                slot.textContent === time
+            );
+            
+            if (selectedSlot) {
+                selectedSlot.classList.add('selected');
+            }
+            
+            // Form alanlarını güncelle
+            updateFormFields();
+        }
+
+        // Form alanlarını güncelle
+        function updateFormFields() {
+            if (selectedDate && selectedTime) {
+                const [hours, minutes] = selectedTime.split(':');
+                const dateTime = new Date(selectedDate);
+                dateTime.setHours(parseInt(hours), parseInt(minutes));
+                
+                // Hidden input
+                document.getElementById('date').value = dateTime.toISOString();
+                
+                // Görünen input
+                const displayText = `${selectedDate.toLocaleDateString('tr-TR')} - ${selectedTime}`;
+                document.getElementById('dateDisplay').value = displayText;
+                
+                // Butonu aktif et
+                document.getElementById('submitBtn').disabled = false;
+            }
+        }
+
+        // Form Submission
+        document.getElementById('randevuForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!selectedDate || !selectedTime) {
+                alert('Lütfen önce tarih ve saat seçin!');
+                return;
+            }
+            
+            const submitBtn = e.target.querySelector('.submit-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Oluşturuluyor...';
+            submitBtn.disabled = true;
+            
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                date: formData.get('date')
+            };
+
+            try {
+                const response = await fetch('http://localhost:4000/randevu', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                const resultDiv = document.getElementById('result');
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Premium Randevu Oluşturuldu!</h3>
+                        <p><strong>Ad:</strong> ${result.appointment.name}</p>
+                        <p><strong>Telefon:</strong> ${result.appointment.phone}</p>
+                        <p><strong>Email:</strong> ${result.appointment.email}</p>
+                        <p><strong>Tarih:</strong> ${new Date(result.appointment.date).toLocaleString('tr-TR')}</p>
+                        <p><strong>Bildirim:</strong> ${result.reminderNote}</p>
+                    `;
+                    e.target.reset();
+                    
+                    // Formu sıfırla
+                    resetCalendar();
+                    
+                    // Takvimi yenile
+                    generateCalendar();
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>❌ Hata!</h3>
+                        <p>${result.error || 'Bilinmeyen bir hata oluştu'}</p>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Bağlantı Hatası</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Takvimi sıfırla
+        function resetCalendar() {
+            selectedDate = null;
+            selectedTime = null;
+            document.getElementById('selectedDateInfo').style.display = 'none';
+            document.getElementById('timeSlots').style.display = 'none';
+            document.getElementById('dateDisplay').value = '';
+            document.getElementById('date').value = '';
+            document.getElementById('submitBtn').disabled = true;
+            
+            // Tüm seçimleri kaldır
+            document.querySelectorAll('.compact-day.active, .compact-time-slot.selected').forEach(el => {
+                el.classList.remove('active', 'selected');
+            });
+        }
+
+        // KOMPAKT DEĞERLENDİRME SİSTEMİ
+        let reviews = [
+            {
+                id: 1,
+                name: "Mehmet Y.",
+                rating: 5,
+                comment: "Harika bir deneyim! Kesinlikle tavsiye ederim.",
+                date: "2024-01-15",
+                verified: true
+            },
+            {
+                id: 2,
+                name: "Ahmet K.",
+                rating: 5,
+                comment: "Profesyonel yaklaşım ve kaliteli hizmet.",
+                date: "2024-01-12",
+                verified: true
+            },
+            {
+                id: 3,
+                name: "Can D.",
+                rating: 4,
+                comment: "Güzel hizmet, ortam temiz ve modern.",
+                date: "2024-01-10",
+                verified: true
+            }
+        ];
+
+        // Değerlendirme formu
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('reviewName').value.trim();
+            const rating = document.querySelector('input[name="rating"]:checked');
+            const comment = document.getElementById('reviewComment').value.trim();
+            
+            if (!name || !rating || !comment) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+            
+            const newReview = {
+                id: reviews.length + 1,
+                name: name,
+                rating: parseInt(rating.value),
+                comment: comment,
+                date: new Date().toISOString().split('T')[0],
+                verified: false
+            };
+            
+            reviews.unshift(newReview);
+            displayReviews();
+            updateReviewStats();
+            this.reset();
+            
+            // Mini başarı mesajı
+            const btn = this.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Gönderildi!';
+            btn.style.background = '#22c55e';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        });
+
+        // Değerlendirmeleri göster
+        function displayReviews() {
+            const reviewsGrid = document.querySelector('.reviews-grid-compact');
+            
+            if (reviews.length === 0) {
+                reviewsGrid.innerHTML = '<div class="review-card-compact">Henüz değerlendirme yok.</div>';
+                return;
+            }
+            
+            // Sadece son 5 değerlendirmeyi göster
+            const recentReviews = reviews.slice(0, 5);
+            
+            reviewsGrid.innerHTML = recentReviews.map(review => `
+                <div class="review-card-compact">
+                    <div class="review-header-compact">
+                        <div class="reviewer-info-compact">
+                            <div class="reviewer-name-compact">
+                                ${review.name}
+                                ${review.verified ? ' <i class="fas fa-check-circle" style="color: var(--gold); font-size: 0.7rem;"></i>' : ''}
+                            </div>
+                            <div class="review-date-compact">${formatDate(review.date)}</div>
+                        </div>
+                        <div class="review-rating-compact">
+                            ${generateStars(review.rating)}
+                        </div>
+                    </div>
+                    <div class="review-comment-compact">
+                        ${review.comment}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Yıldız oluştur
+        function generateStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                stars += i <= rating ? 
+                    '<i class="fas fa-star"></i>' : 
+                    '<i class="far fa-star"></i>';
+            }
+            return stars;
+        }
+
+        // Tarih formatı
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('tr-TR', {
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // İstatistikleri güncelle
+        function updateReviewStats() {
+            const totalReviews = reviews.length;
+            const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews;
+            
+            document.querySelector('.rating-score').textContent = averageRating.toFixed(1);
+            document.querySelector('.rating-text').textContent = `${totalReviews} Değerlendirme`;
+        }
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dil ayarlarını yükle
+            const userLang = detectLanguage();
+            changeLanguage(userLang);
+            
+            // Bildirim izni iste (kullanıcı etkileşimi sonrası)
+            setTimeout(() => {
+                requestNotificationPermission();
+            }, 3000);
+            
+            // Diğer başlangıç fonksiyonları...
+            generateCalendar();
+            displayReviews();
+            updateReviewStats();
+            
+            // Smooth Scroll
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Dil değiştirme event listener'ları
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    changeLanguage(btn.dataset.lang);
+                });
+            });
+
+            // Bildirim zili event listener'ı
+            document.getElementById('notificationBell').addEventListener('click', () => {
+                showNotification('🔔 Yeni kampanyalarımızı keşfedin!', 'info');
+            });
+
+            // Parallax Effect
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallax = document.querySelector('.hero');
+                parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
+            });
+        });
+    </script>
+</body>
+</html>

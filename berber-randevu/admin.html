@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - EliteBarber</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: #0f0f0f;
+            color: white;
+            padding: 20px;
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #FFD700;
+        }
+        
+        .login-section {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .login-form {
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        
+        .login-form input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            font-size: 16px;
+        }
+        
+        .login-form button {
+            width: 100%;
+            padding: 15px;
+            background: #FFD700;
+            color: black;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .admin-panel {
+            display: none;
+        }
+        
+        .filters {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filters input, .filters select, .filters button {
+            padding: 10px 15px;
+            border: 1px solid #FFD700;
+            border-radius: 5px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+        }
+        
+        .filters button {
+            background: #FFD700;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .appointments-list {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .appointment-item {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .appointment-item:last-child {
+            border-bottom: none;
+        }
+        
+        .appointment-info h3 {
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+        
+        .appointment-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-cancel {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #666;
+            color: white;
+        }
+        
+        .status-confirmed {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        
+        .status-cancelled {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid #FFD700;
+        }
+        
+        .modal h2 {
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+        
+        .modal textarea {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #FFD700;
+            border-radius: 5px;
+            color: white;
+            margin-bottom: 20px;
+            resize: vertical;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1>🧔 EliteBarber Admin Panel</h1>
+            <button onclick="logout()" class="btn btn-cancel" style="display: none;" id="logoutBtn">Çıkış</button>
+        </div>
+        
+        <!-- Giriş Section -->
+        <div id="loginSection" class="login-section">
+            <h2>Admin Girişi</h2>
+            <div class="login-form">
+                <input type="password" id="adminPassword" placeholder="Admin Şifresi">
+                <button onclick="login()">Giriş Yap</button>
+            </div>
+        </div>
+        
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="admin-panel">
+            <!-- Filtreler -->
+            <div class="filters">
+                <input type="date" id="startDate" placeholder="Başlangıç Tarihi">
+                <input type="date" id="endDate" placeholder="Bitiş Tarihi">
+                <select id="statusFilter">
+                    <option value="">Tüm Randevular</option>
+                    <option value="confirmed">Onaylı</option>
+                    <option value="cancelled">İptal Edilmiş</option>
+                </select>
+                <button onclick="loadAppointments()">Filtrele</button>
+                <button onclick="clearFilters()">Temizle</button>
+            </div>
+            
+            <!-- İstatistikler -->
+            <div class="stats" id="stats">
+                <!-- JS ile doldurulacak -->
+            </div>
+            
+            <!-- Randevu Listesi -->
+            <div class="appointments-list" id="appointmentsList">
+                <!-- JS ile doldurulacak -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- İptal Modal -->
+    <div id="cancelModal" class="modal">
+        <div class="modal-content">
+            <h2>Randevu İptal</h2>
+            <p id="cancelAppointmentInfo"></p>
+            <textarea id="cancelReason" placeholder="İptal nedeni..."></textarea>
+            <div class="modal-buttons">
+                <button onclick="closeCancelModal()" class="btn btn-delete">Vazgeç</button>
+                <button onclick="confirmCancellation()" class="btn btn-cancel">İptal Et</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:4000';
+        let currentAppointmentId = null;
+        
+        // Giriş fonksiyonu
+        async function login() {
+            const password = document.getElementById('adminPassword').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('adminPanel').style.display = 'block';
+                    document.getElementById('logoutBtn').style.display = 'block';
+                    loadAppointments();
+                } else {
+                    alert('Şifre hatalı!');
+                }
+            } catch (error) {
+                alert('Giriş hatası: ' + error.message);
+            }
+        }
+        
+        // Çıkış fonksiyonu
+        function logout() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+        }
+        
+        // Randevuları yükle
+        async function loadAppointments() {
+            try {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const status = document.getElementById('statusFilter').value;
+                
+                let url = `${API_BASE}/admin/randevular?`;
+                const params = [];
+                if (startDate) params.push(`startDate=${startDate}`);
+                if (endDate) params.push(`endDate=${endDate}`);
+                if (status) params.push(`status=${status}`);
+                
+                url += params.join('&');
+                
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayAppointments(result.appointments);
+                    updateStats(result.appointments);
+                }
+            } catch (error) {
+                console.error('Randevu yükleme hatası:', error);
+            }
+        }
+        
+        // İstatistikleri güncelle
+        function updateStats(appointments) {
+            const total = appointments.length;
+            const confirmed = appointments.filter(a => a.status === 'confirmed').length;
+            const cancelled = appointments.filter(a => a.status === 'cancelled').length;
+            const today = appointments.filter(a => 
+                new Date(a.date).toDateString() === new Date().toDateString()
+            ).length;
+            
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${total}</div>
+                    <div>Toplam Randevu</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${confirmed}</div>
+                    <div>Onaylı</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${cancelled}</div>
+                    <div>İptal Edilmiş</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${today}</div>
+                    <div>Bugün</div>
+                </div>
+            `;
+        }
+        
+        // Randevuları göster
+        function displayAppointments(appointments) {
+            const container = document.getElementById('appointmentsList');
+            
+            if (appointments.length === 0) {
+                container.innerHTML = '<div class="appointment-item">Randevu bulunamadı</div>';
+                return;
+            }
+            
+            container.innerHTML = appointments.map(appointment => `
+                <div class="appointment-item">
+                    <div class="appointment-info">
+                        <h3>${appointment.name}</h3>
+                        <p>📞 ${appointment.phone} | 📧 ${appointment.email || 'Yok'}</p>
+                        <p>📅 ${new Date(appointment.date).toLocaleString('tr-TR')}</p>
+                        <p class="status-${appointment.status}">
+                            ${appointment.status === 'confirmed' ? '✅ Onaylı' : '❌ İptal Edilmiş'}
+                            ${appointment.cancellationReason ? ` - ${appointment.cancellationReason}` : ''}
+                        </p>
+                    </div>
+                    <div class="appointment-actions">
+                        ${appointment.status === 'confirmed' ? 
+                            `<button class="btn btn-cancel" onclick="openCancelModal('${appointment._id}', '${appointment.name}', '${new Date(appointment.date).toLocaleString('tr-TR')}')">İptal Et</button>` : 
+                            ''
+                        }
+                        <button class="btn btn-delete" onclick="deleteAppointment('${appointment._id}')">Sil</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Filtreleri temizle
+        function clearFilters() {
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('statusFilter').value = '';
+            loadAppointments();
+        }
+        
+        // İptal modalını aç
+        function openCancelModal(id, name, date) {
+            currentAppointmentId = id;
+            document.getElementById('cancelAppointmentInfo').textContent = 
+                `${name} - ${date}`;
+            document.getElementById('cancelModal').style.display = 'flex';
+        }
+        
+        // İptal modalını kapat
+        function closeCancelModal() {
+            document.getElementById('cancelModal').style.display = 'none';
+            document.getElementById('cancelReason').value = '';
+            currentAppointmentId = null;
+        }
+        
+        // İptal işlemini onayla
+        async function confirmCancellation() {
+            const reason = document.getElementById('cancelReason').value;
+            
+            if (!reason.trim()) {
+                alert('Lütfen iptal nedeni giriniz.');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/randevu/${currentAppointmentId}/iptal`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ reason })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Randevu iptal edildi ve müşteriye bildirim gönderildi.');
+                    closeCancelModal();
+                    loadAppointments();
+                } else {
+                    alert('İptal hatası: ' + result.error);
+                }
+            } catch (error) {
+                alert('İptal hatası: ' + error.message);
+            }
+        }
+        
+        // Randevu sil
+        async function deleteAppointment(id) {
+            if (!confirm('Bu randevuyu silmek istediğinizden emin misiniz?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/randevu/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Randevu silindi.');
+                    loadAppointments();
+                } else {
+                    alert('Silme hatası: ' + result.error);
+                }
+            } catch (error) {
+                alert('Silme hatası: ' + error.message);
+            }
+        }
+        
+        // Sayfa yüklendiğinde bugünün tarihini filtreye set et
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+        }
+    </script>
+</body>
+</html>
