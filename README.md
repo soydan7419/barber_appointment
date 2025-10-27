@@ -113,7 +113,7 @@ Version: 4.1 or later
 Copy connection string:
 
 text
-mongodb+srv://elitebarber:741741Aa.@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+mongodb+srv://elitebarber:yourpassword@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
 2. 📧 GMAIL API SETUP
 Step 1: Create Google Cloud Console Project
 Go to Google Cloud Console
@@ -244,7 +244,7 @@ Fill the .env file in project directory as follows:
 
 env
 # MongoDB Connection (from Atlas)
-MONGO_URI=mongodb+srv://elitebarber:741741Aa.@cluster0.xxxxx.mongodb.net/berberdb?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://elitebarber:yourpassword@cluster0.xxxxx.mongodb.net/berberdb?retryWrites=true&w=majority
 
 # Server Port
 PORT=4000
@@ -253,7 +253,7 @@ PORT=4000
 GMAIL_CLIENT_ID=49898771535-hvu880kd9o3ppba83jit654lb8kprbdh.apps.googleusercontent.com
 GMAIL_CLIENT_SECRET=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
 GMAIL_REFRESH_TOKEN=1//04acTqV6qmniDCgYIARAAGAQSNwF-L9IrQGTMUefkxzKpb_JhDdtUz3IpQv_oD8BOsjirMlpZn3H8MeyFJzrRAuXZB4AoeK4XQt4
-GMAIL_USER=soydankadir19@gmail.com
+GMAIL_USER=yourgmail@gmail.com
 
 # Twilio API (from Twilio)
 TWILIO_ACCOUNT_SID=ACf3399a386d3fb244e5912218ce2280d7
