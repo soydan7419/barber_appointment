@@ -84,7 +84,7 @@ Authentication Method: Password
 
 Username: elitebarber
 
-Password: Set a strong password (e.g., 741741Aa.)
+Password: Set a strong password (e.g., yourpassword)
 
 Database User Privileges: Read and write to any database
 
@@ -237,28 +237,29 @@ Copy Auth Token value
 
 Copy Phone Number value
 
-Copy WhatsApp From value (whatsapp:+14155238886)
+Copy WhatsApp From value (whatsapp:+14155238786)
 
 4. ⚙️ FILLING THE .ENV FILE
 Fill the .env file in project directory as follows:
 
 env
 # MongoDB Connection (from Atlas)
-MONGO_URI=mongodb+srv://elitebarber:yourpassword@cluster0.xxxxx.mongodb.net/berberdb?retryWrites=true&w=majority
+MONGO_URI=your_mongodb_connection_string_here
 
 # Server Port
 PORT=4000
 
 # Gmail API (from Google Cloud)
-GMAIL_CLIENT_ID=49898771535-hvu880kd9o3ppba83jit654lb8kprbdh.apps.googleusercontent.com
-GMAIL_CLIENT_SECRET=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
-GMAIL_REFRESH_TOKEN=1//04acTqV6qmniDCgYIARAAGAQSNwF-L9IrQGTMUefkxzKpb_JhDdtUz3IpQv_oD8BOsjirMlpZn3H8MeyFJzrRAuXZB4AoeK4XQt4
+GMAIL_CLIENT_ID=your_gmail_client_id_here
+GMAIL_CLIENT_SECRET=your_gmail_client_secret_here
+GMAIL_REFRESH_TOKEN=your_gmail_refresh_token_here
+GMAIL_USER=your_gmail_address_here
 GMAIL_USER=yourgmail@gmail.com
 
 # Twilio API (from Twilio)
-TWILIO_ACCOUNT_SID=ACf3399a386d3fb244e5912218ce2280d7
-TWILIO_AUTH_TOKEN=d830f907472b5267bb2456fe73007404
-TWILIO_WHATSAPP_FROM=yourphonenumber
+TWILIO_ACCOUNT_SID=your_twilio_account_sid_here
+TWILIO_AUTH_TOKEN=your_twilio_auth_token_here
+TWILIO_WHATSAPP_FROM=your_twilio_whatsapp_number_here
 TWILIO_PHONE_NUMBER=yourphonenumber
 
 # Admin Settings
